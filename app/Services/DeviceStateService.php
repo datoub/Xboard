@@ -171,6 +171,44 @@ class DeviceStateService
     }
 
     /**
+     * Get detailed online devices, optionally scoped to a single user.
+     */
+    public function getDeviceDetails(?int $userId = null): array
+    {
+        $keys = $userId ? [self::PREFIX . $userId] : Redis::keys(self::PREFIX . '*');
+        $now = time();
+        $result = [];
+
+        foreach ($keys as $key) {
+            $actualKey = $this->removeRedisPrefix($key);
+            $uid = (int) substr($actualKey, strlen(self::PREFIX));
+            if ($uid <= 0) {
+                continue;
+            }
+
+            $data = Redis::hgetall($actualKey);
+            foreach ($data as $field => $timestamp) {
+                $timestamp = (int) $timestamp;
+                if ($now - $timestamp > self::TTL || !str_contains($field, ':')) {
+                    continue;
+                }
+
+                [$nodeId, $ip] = explode(':', $field, 2);
+                $result[] = [
+                    'user_id' => $uid,
+                    'node_id' => (int) $nodeId,
+                    'ip' => $ip,
+                    'last_seen_at' => $timestamp,
+                    'age_seconds' => max(0, $now - $timestamp),
+                ];
+            }
+        }
+
+        usort($result, fn($a, $b) => $b['last_seen_at'] <=> $a['last_seen_at']);
+        return $result;
+    }
+
+    /**
      * Strip port from IP address: "1.2.3.4:12345" → "1.2.3.4", "[::1]:443" → "::1"
      */
     private static function normalizeIP(string $ip): string

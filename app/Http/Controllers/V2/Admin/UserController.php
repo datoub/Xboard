@@ -12,6 +12,7 @@ use App\Models\MailCampaignRecipient;
 use App\Models\Plan;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\DeviceStateService;
 use App\Services\NodeSyncService;
 use App\Services\Plugin\HookManager;
 use App\Services\UserService;
@@ -272,6 +273,9 @@ class UserController extends Controller
         if (isset($params['commission_balance'])) {
             $params['commission_balance'] = $params['commission_balance'] * 100;
         }
+        if (array_key_exists('dynamic_speed_limit', $params)) {
+            $params['dynamic_speed_limit'] = $this->normalizeDynamicSpeedLimit($params['dynamic_speed_limit']);
+        }
 
         $params = HookManager::filter('admin.user.update.params', $params, $request, $user);
 
@@ -295,6 +299,42 @@ class UserController extends Controller
         ]);
 
         return $this->success(true);
+    }
+
+    public function onlineDevices(Request $request, DeviceStateService $deviceStateService): JsonResponse
+    {
+        $userId = $request->input('user_id');
+        if ($userId !== null && !is_numeric($userId)) {
+            return $this->fail([422, '用户ID格式不正确']);
+        }
+
+        return $this->success($deviceStateService->getDeviceDetails($userId !== null ? (int) $userId : null));
+    }
+
+    private function normalizeDynamicSpeedLimit(?array $policy): ?array
+    {
+        if (empty($policy) || empty($policy['enabled'])) {
+            return null;
+        }
+
+        $timeRanges = [];
+        foreach (($policy['time_ranges'] ?? []) as $range) {
+            if (!empty($range['start']) && !empty($range['end'])) {
+                $timeRanges[] = [
+                    'start' => $range['start'],
+                    'end' => $range['end'],
+                ];
+            }
+        }
+
+        return [
+            'enabled' => true,
+            'threshold_mbps' => max(0, (int) ($policy['threshold_mbps'] ?? 0)),
+            'trigger_seconds' => max(0, (int) ($policy['trigger_seconds'] ?? 0)),
+            'limit_mbps' => max(0, (int) ($policy['limit_mbps'] ?? 0)),
+            'recovery_seconds' => max(0, (int) ($policy['recovery_seconds'] ?? 0)),
+            'time_ranges' => $timeRanges,
+        ];
     }
 
     // Export users to CSV.

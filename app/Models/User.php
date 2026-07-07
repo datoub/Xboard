@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $commission_rate 返佣比例
  * @property int|null $commission_type 返佣类型
  * @property int|null $device_limit 设备限制数量
+ * @property array|null $dynamic_speed_limit 动态限速策略
  * @property int|null $discount 折扣
  * @property int|null $last_login_at 最后登录时间
  * @property int|null $parent_id 父账户ID
@@ -77,6 +78,7 @@ class User extends Authenticatable
         'commission_rate' => 'float',
         'next_reset_at' => 'timestamp',
         'last_reset_at' => 'timestamp',
+        'dynamic_speed_limit' => 'array',
     ];
     protected $hidden = ['password'];
 

@@ -33,7 +33,16 @@ class UserUpdate extends FormRequest
             'commission_balance' => 'numeric',
             'remarks' => 'nullable',
             'speed_limit' => 'nullable|integer',
-            'device_limit' => 'nullable|integer'
+            'device_limit' => 'nullable|integer',
+            'dynamic_speed_limit' => 'nullable|array',
+            'dynamic_speed_limit.enabled' => 'boolean',
+            'dynamic_speed_limit.threshold_mbps' => 'nullable|integer|min:0',
+            'dynamic_speed_limit.trigger_seconds' => 'nullable|integer|min:0',
+            'dynamic_speed_limit.limit_mbps' => 'nullable|integer|min:0',
+            'dynamic_speed_limit.recovery_seconds' => 'nullable|integer|min:0',
+            'dynamic_speed_limit.time_ranges' => 'nullable|array',
+            'dynamic_speed_limit.time_ranges.*.start' => 'required_with:dynamic_speed_limit.time_ranges|string|date_format:H:i',
+            'dynamic_speed_limit.time_ranges.*.end' => 'required_with:dynamic_speed_limit.time_ranges|string|date_format:H:i'
         ];
 
         return HookManager::filter('admin.user.update.rules', $rules, $this);
@@ -66,7 +75,14 @@ class UserUpdate extends FormRequest
             'commission_balance.integer' => '佣金格式不正确',
             'password.min' => '密码长度最小8位',
             'speed_limit.integer' => '限速格式不正确',
-            'device_limit.integer' => '设备数量格式不正确'
+            'device_limit.integer' => '设备数量格式不正确',
+            'dynamic_speed_limit.array' => '动态限速策略格式不正确',
+            'dynamic_speed_limit.threshold_mbps.integer' => '动态限速触发带宽格式不正确',
+            'dynamic_speed_limit.trigger_seconds.integer' => '动态限速触发时长格式不正确',
+            'dynamic_speed_limit.limit_mbps.integer' => '动态限速限制带宽格式不正确',
+            'dynamic_speed_limit.recovery_seconds.integer' => '动态限速恢复时长格式不正确',
+            'dynamic_speed_limit.time_ranges.*.start.date_format' => '动态限速开始时间格式应为HH:mm',
+            'dynamic_speed_limit.time_ranges.*.end.date_format' => '动态限速结束时间格式应为HH:mm'
         ];
 
         return HookManager::filter('admin.user.update.messages', $messages, $this);

@@ -132,6 +132,7 @@ class AdminRoute
                 $router->post('/generate', [UserController::class, 'generate']);
                 $router->post('/dumpCSV', [UserController::class, 'dumpCSV']);
                 $router->post('/sendMail', [UserController::class, 'sendMail']);
+                $router->get('/onlineDevices', [UserController::class, 'onlineDevices']);
                 $router->get('/mailCampaigns', [UserController::class, 'mailCampaigns']);
                 $router->get('/mailCampaignDetail', [UserController::class, 'mailCampaignDetail']);
                 $router->post('/pauseMailCampaign', [UserController::class, 'pauseMailCampaign']);
