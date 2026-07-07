@@ -18,7 +18,11 @@ class DeviceStateService
     private function removeRedisPrefix(string $key): string
     {
         $prefix = config('database.redis.options.prefix', '');
-        return $prefix ? substr($key, strlen($prefix)) : $key;
+        if ($prefix !== '' && str_starts_with($key, $prefix)) {
+            return substr($key, strlen($prefix));
+        }
+
+        return $key;
     }
 
     /**
