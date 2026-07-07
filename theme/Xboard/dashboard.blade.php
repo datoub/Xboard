@@ -52,22 +52,28 @@
   </style>
   <div id="app"></div>
   {!! $theme_config['custom_html'] !!}
-  <!-- Chatwoot customer support widget: managed by BaoTa-visible XBoard theme file. -->
+  @php
+    $chatwootBaseUrl = rtrim($theme_config['chatwoot_base_url'] ?? config('services.chatwoot.base_url', ''), '/');
+    $chatwootWebsiteToken = $theme_config['chatwoot_website_token'] ?? config('services.chatwoot.website_token', '');
+  @endphp
+  @if ($chatwootBaseUrl && $chatwootWebsiteToken)
+  <!-- Chatwoot customer support widget. Configure URL/token outside source control. -->
   <script>
     (function(d,t) {
-      var BASE_URL = "https://chatwoot.example.com";
+      var BASE_URL = @json($chatwootBaseUrl);
       var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
       g.src = BASE_URL + "/packs/js/sdk.js";
       g.async = true;
       s.parentNode.insertBefore(g, s);
       g.onload = function() {
         window.chatwootSDK.run({
-          websiteToken: "CHATWOOT_WEBSITE_TOKEN",
+          websiteToken: @json($chatwootWebsiteToken),
           baseUrl: BASE_URL
         });
       };
     })(document, "script");
   </script>
+  @endif
 </body>
 
 </html>
