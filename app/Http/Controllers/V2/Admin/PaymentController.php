@@ -60,8 +60,8 @@ class PaymentController extends Controller
 
     public function save(Request $request)
     {
-        if (!admin_setting('app_url')) {
-            return $this->fail([400, '请在站点配置中配置站点地址']);
+        if (!backend_base_url()) {
+            return $this->fail([400, '请在站点配置中配置后端对接域名或站点地址']);
         }
         $params = $request->validate([
             'name' => 'required',

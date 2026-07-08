@@ -10,7 +10,7 @@ class ApplyRuntimeSettings
 {
     public function handle(Request $request, Closure $next)
     {
-        $appUrl = admin_setting('app_url');
+        $appUrl = backend_base_url();
         if (is_string($appUrl) && $appUrl !== '') {
             URL::forceRootUrl($appUrl);
         }
@@ -22,4 +22,3 @@ class ApplyRuntimeSettings
         return $next($request);
     }
 }
-

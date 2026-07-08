@@ -75,6 +75,10 @@ class PaymentService
     {
         // custom notify domain name
         $notifyUrl = url("/api/v1/guest/payment/notify/{$this->method}/{$this->config['uuid']}");
+        if (!$this->config['notify_domain'] && ($backendUrl = backend_base_url())) {
+            $parseUrl = parse_url($notifyUrl);
+            $notifyUrl = $backendUrl . ($parseUrl['path'] ?? '');
+        }
         if ($this->config['notify_domain']) {
             $parseUrl = parse_url($notifyUrl);
             $notifyUrl = $this->config['notify_domain'] . $parseUrl['path'];
@@ -82,7 +86,7 @@ class PaymentService
 
         return $this->payment->pay([
             'notify_url' => $notifyUrl,
-            'return_url' => source_base_url('/#/order/' . $order['trade_no']),
+            'return_url' => payment_return_url('/#/order/' . $order['trade_no']),
             'trade_no' => $order['trade_no'],
             'total_amount' => $order['total_amount'],
             'user_id' => $order['user_id'],

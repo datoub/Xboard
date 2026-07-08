@@ -28,6 +28,9 @@ class ConfigSave extends FormRequest
         'app_name' => '',
         'app_description' => '',
         'app_url' => 'nullable|url',
+        'backend_url' => 'nullable|url',
+        'frontend_url' => 'nullable|url',
+        'payment_return_mode' => 'nullable|in:source,frontend',
         'subscribe_url' => 'nullable',
         'try_out_enable' => '',
         'try_out_plan_id' => 'integer',
@@ -128,6 +131,9 @@ class ConfigSave extends FormRequest
         // illiteracy prompt
         return [
             'app_url.url' => '站点URL格式不正确，必须携带http(s)://',
+            'backend_url.url' => '后端对接域名格式不正确，必须携带http(s)://',
+            'frontend_url.url' => '用户前端域名格式不正确，必须携带http(s)://',
+            'payment_return_mode.in' => '支付回跳方式只能选择实际访问域名或指定前端域名',
             'subscribe_url.url' => '订阅URL格式不正确，必须携带http(s)://',
             'server_token.min' => '通讯密钥长度必须大于16位',
             'tos_url.url' => '服务条款URL格式不正确，必须携带http(s)://',

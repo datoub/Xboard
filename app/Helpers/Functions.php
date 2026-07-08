@@ -80,3 +80,48 @@ if (!function_exists('source_base_url')) {
         return $baseUrl . '/' . $path;
     }
 }
+
+if (!function_exists('configured_base_url')) {
+    function configured_base_url(string $key, ?string $fallback = null): ?string
+    {
+        $url = trim((string) admin_setting($key, ''));
+        if ($url === '') {
+            $url = trim((string) ($fallback ?? ''));
+        }
+
+        if ($url === '') {
+            return null;
+        }
+
+        return rtrim($url, '/');
+    }
+}
+
+if (!function_exists('backend_base_url')) {
+    function backend_base_url(?string $fallback = null): ?string
+    {
+        return configured_base_url('backend_url', configured_base_url('app_url', $fallback));
+    }
+}
+
+if (!function_exists('frontend_base_url')) {
+    function frontend_base_url(?string $fallback = null): ?string
+    {
+        return configured_base_url('frontend_url', configured_base_url('app_url', $fallback));
+    }
+}
+
+if (!function_exists('payment_return_url')) {
+    function payment_return_url(string $path = ''): string
+    {
+        $mode = admin_setting('payment_return_mode', 'source');
+        $baseUrl = $mode === 'frontend' ? frontend_base_url() : null;
+
+        if ($baseUrl) {
+            $path = ltrim($path, '/');
+            return $baseUrl . '/' . $path;
+        }
+
+        return source_base_url($path);
+    }
+}
