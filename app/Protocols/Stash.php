@@ -4,6 +4,7 @@ namespace App\Protocols;
 
 use Symfony\Component\Yaml\Yaml;
 use App\Utils\Helper;
+use App\Services\Subscription\MihomoDnsHardeningService;
 use Illuminate\Support\Facades\File;
 use App\Support\AbstractProtocol;
 use App\Models\Server;
@@ -94,7 +95,10 @@ class Stash extends AbstractProtocol
 
         $template = subscribe_template('stash');
 
-        $config = Yaml::parse($template);
+        $config = app(MihomoDnsHardeningService::class)->apply(
+            Yaml::parse($template),
+            $user
+        );
         $proxy = [];
         $proxies = [];
 

@@ -131,6 +131,10 @@ class ConfigController extends Controller
                 'default_remind_expire' => (bool) admin_setting('default_remind_expire', 1),
                 'default_remind_traffic' => (bool) admin_setting('default_remind_traffic', 1),
                 'subscribe_path' => admin_setting('subscribe_path', 's'),
+                'subscription_mihomo_dns_hardening_enable' => (bool) admin_setting('subscription_mihomo_dns_hardening_enable', false),
+                'subscription_mihomo_dns_canary_user_ids' => admin_setting('subscription_mihomo_dns_canary_user_ids', []),
+                'subscription_mihomo_node_domains' => admin_setting('subscription_mihomo_node_domains', []),
+                'subscription_mihomo_node_resolvers' => admin_setting('subscription_mihomo_node_resolvers', []),
             ],
             'frontend' => [
                 'frontend_theme' => admin_setting('frontend_theme', 'Xboard'),

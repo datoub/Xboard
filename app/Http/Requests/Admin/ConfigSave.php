@@ -46,6 +46,12 @@ class ConfigSave extends FormRequest
         'show_info_to_server_enable' => '',
         'show_protocol_to_server_enable' => '',
         'subscribe_path' => '',
+        'subscription_mihomo_dns_hardening_enable' => 'boolean',
+        'subscription_mihomo_dns_canary_user_ids' => 'nullable|array',
+        'subscription_mihomo_node_domains' => 'nullable|array',
+        'subscription_mihomo_node_domains.*' => 'string|max:255',
+        'subscription_mihomo_node_resolvers' => 'nullable|array',
+        'subscription_mihomo_node_resolvers.*' => 'string|max:255',
         // server
         'server_token' => 'nullable|min:16',
         'server_pull_interval' => 'integer',

@@ -3,6 +3,7 @@
 namespace App\Protocols;
 
 use App\Models\Server;
+use App\Services\Subscription\MihomoDnsHardeningService;
 use App\Utils\Helper;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Yaml\Yaml;
@@ -149,7 +150,10 @@ class ClashMeta extends AbstractProtocol
 
         $template = subscribe_template('clashmeta');
 
-        $config = Yaml::parse($template);
+        $config = app(MihomoDnsHardeningService::class)->apply(
+            Yaml::parse($template),
+            $user
+        );
         $proxy = [];
         $proxies = [];
 

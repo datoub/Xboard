@@ -3,6 +3,7 @@
 namespace App\Protocols;
 
 use App\Models\Server;
+use App\Services\Subscription\MihomoDnsHardeningService;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Yaml\Yaml;
 use App\Support\AbstractProtocol;
@@ -29,7 +30,10 @@ class Clash extends AbstractProtocol
         // 优先从数据库配置中获取模板
         $template = subscribe_template('clash');
 
-        $config = Yaml::parse($template);
+        $config = app(MihomoDnsHardeningService::class)->apply(
+            Yaml::parse($template),
+            $user
+        );
         $proxy = [];
         $proxies = [];
 

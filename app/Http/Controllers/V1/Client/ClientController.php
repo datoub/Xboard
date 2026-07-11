@@ -4,9 +4,11 @@ namespace App\Http\Controllers\V1\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Server;
+use App\Protocols\ClashMeta;
 use App\Protocols\General;
 use App\Services\Plugin\HookManager;
 use App\Services\ServerService;
+use App\Services\Subscription\MihomoDnsHardeningService;
 use App\Services\UserService;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
@@ -63,8 +65,15 @@ class ClientController extends Controller
         $requestedTypes = $this->parseRequestedTypes($request->input('types'));
         $filterKeywords = $this->parseFilterKeywords($request->input('filter'));
 
-        $protocolClassName = app('protocols.manager')->matchProtocolClassName($clientInfo['flag'])
-            ?? General::class;
+        $protocolClassName = app('protocols.manager')->matchProtocolClassName($clientInfo['flag']);
+        $mihomoHardening = app(MihomoDnsHardeningService::class);
+        if (
+            $protocolClassName === null
+            && $mihomoHardening->supportsUserAgent($user, $clientInfo['flag'])
+        ) {
+            $protocolClassName = ClashMeta::class;
+        }
+        $protocolClassName ??= General::class;
 
         $serversFiltered = $this->filterServers(
             servers: $servers,
